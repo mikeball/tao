@@ -1,9 +1,11 @@
 (ns tao.core
   (:require [tao-core.core :as tao-core]
             [ring.middleware.params :as ring-params]
+            [ring.middleware.keyword-params :as ring-keyword-params]
             [ring.middleware.stacktrace :as ring-stacktrace]
             [ring.middleware.resource :as ring-resource]
-            [ring.middleware.file-info :as ring-file-info]))
+            [ring.middleware.file-info :as ring-file-info]
+            ))
 
 ;; need to figure out better name than core for this namespace!!!
 
@@ -28,7 +30,7 @@
      ;; check handler for other than :http and disallow?
      ;; don't forget to remove tao internal tracking information
      ;; pass nice keys to handler {:user 'bob :params 'all-params :request 'ring-request
-     
+
      (handler ctx)
 
      )))
@@ -43,7 +45,11 @@
 
       (ring-resource/wrap-resource "public")
       (ring-file-info/wrap-file-info)
+      
+      (ring-keyword-params/wrap-keyword-params)
       (ring-params/wrap-params)
+      
+
       (ring-stacktrace/wrap-stacktrace)
       
       ) )
