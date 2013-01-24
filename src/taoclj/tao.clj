@@ -28,6 +28,6 @@
      (handler junction-ctx))))
 
 
-(defn init [dispatch opts]
+(defn init [opts dispatch]
   (junction/init opts)
   dispatch)
