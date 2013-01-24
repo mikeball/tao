@@ -1,7 +1,5 @@
-(ns tao.core-test
-  (:use clojure.test
-        tao.core))
-
+(ns taoclj.tao-tests
+  (:use clojure.test taoclj.tao))
 
 
 
@@ -10,7 +8,6 @@
 
 (deftest wrap-user-looks-up-user
   (= (-> (wrap-user {} (fn [ctx] (str "user:" "bob")))
-         :tao
          :user)
      "user:bob"))
 
