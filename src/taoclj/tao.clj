@@ -35,26 +35,31 @@
                             " *** must be set in settings map!")))
     (alter-var-root var-to-alter (fn [f] val))))
 
-(defn init [settings dispatch]
+(defn init [dispatch settings]
   (println "*** now initializing tao settings *** ")
   
   (set-option! #'routing/routes
                (settings :routes))
   
   (set-option! #'routing/not-found-handler
-               (settings :not-found-handler))
+               (settings :not-found))
   
   (set-option! #'routing/not-authorized-handler 
-               (settings :not-authorized-handler))
+               (settings :not-authorized))
   
   (set-option! #'response/content-type-default 
-               (settings :content-type-default))
-  
-  (println "*** settings initialization is complete *** ")
+               (settings :content-type))
   
   dispatch)
 
 
 
+
+(defmacro defroutes [name & route-data]
+  `(def ~name (routing/build ~@route-data)))
+
+
+(defmacro defapp [name dispatch settings]
+  `(def ~name (init ~dispatch ~settings)))
 
 
