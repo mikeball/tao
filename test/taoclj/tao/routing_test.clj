@@ -4,39 +4,36 @@
 
 
 (deftest unmatched-route-returns-nil
-  (with-redefs [routing/not-found-handler 'nfh]
-    (are [route path method]
-         (nil? (routing/match-route route path method []))
-         
-         ["/" {}] "/nope" :get ;; no path match
-         ["/" {}] "/" :get))) ;; path matched, but no method match
+  (are [route path method]
+       (nil? (routing/match-route 'nah route path method []))
+       ["/" {}] "/nope" :get ;; no path match
+       ["/" {}] "/" :get)) ;; path matched, but no method match
 
 
 (deftest unauthorized-route-returns-not-authorized-handler
-  (with-redefs [routing/not-authorized-handler 'nah]
-    (are [route path method roles]
-         (= 'nah (:handler (routing/match-route route path method roles)))
-         
-         ["/" {:get ['h :myrole]}] "/" :get []
-         ["/" {:get ['h :myrole]}] "/" :get [:notmyrole])))
+  (are [route path method roles]
+       (= 'nah (:handler (routing/match-route 'nah route path method roles)))
+       
+       ["/" {:get ['h :myrole]}] "/" :get []
+       ["/" {:get ['h :myrole]}] "/" :get [:notmyrole]))
 
 
 (deftest matched-returns-handler
   (are [route path method roles] (= 'h 
-                                    (:handler (routing/match-route route path method roles)))
+                                    (:handler (routing/match-route 'nah route path method roles)))
        ["/" {:get ['h :myrole]}] "/" :get [:myrole]))
 
 
 (deftest routes-marked-public-ignore-role-checks
-  (are [route path method roles] (= 'h (:handler (routing/match-route route path method roles)))
+  (are [route path method roles] (= 'h (:handler (routing/match-route 'nah route path method roles)))
        ["/" {:get ['h :public]}] "/" :get []))
 
 
 (deftest path-params-are-returned
   (are [route-path request-path expected-params] 
-       (= expected-params (:path-params (routing/match-route 
-                                         [route-path {:get ['h :myrole]}]
-                                         request-path :get [:myrole])))
+       (= expected-params (:path-params (routing/match-route 'nah
+                                                             [route-path {:get ['h :myrole]}]
+                                                             request-path :get [:myrole])))
        "/a" "/a" {}
        "/:a" "/1" {:a "1"}
        "/:a/b/:c" "/a/b/c"  {:a "a" :c "c"}))
@@ -50,21 +47,20 @@
 
 
 (deftest unmatched-returns-not-found-handler
-  (with-redefs [routing/not-found-handler 'nf
-                routing/routes routes]
-    (are [path method roles]
-         (= 'nf (:handler (routing/match path method roles)))
-         
-         "/" :get [] ;; path not matched
-         "/a" :post []))) ;; path match, method not matched
+  (are [request-path request-method request-roles]
+       (= 'nf (:handler (routing/match routes 'nf 'na request-path request-method request-roles)))
+       
+       "/" :get [] ;; path not matched
+       "/a" :post [])) ;; path match, method not matched
 
 
 (deftest matched-returns-handler
-  (with-redefs [routing/routes routes]
-    (are [path method roles expected]
-         (= expected (:handler (routing/match path method roles)))
-         "/a" :get [] 'h1 ;; path matched, public route
-         "/b" :get [:y] 'h2)))
+  (are [request-path request-method request-roles expected]
+       (= expected (:handler (routing/match routes 'nf 'na request-path request-method request-roles)))
+       "/a" :get [] 'h1 ;; path matched, public route
+       "/b" :get [:y] 'h2))
+
+
 
 
 

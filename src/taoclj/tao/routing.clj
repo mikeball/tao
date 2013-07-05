@@ -3,14 +3,9 @@
             [taoclj.tao.util :as util]))
 
 
-(def routes nil)
-(def not-found-handler nil)
-(def not-authorized-handler nil)
-
-
 (defn match-route
   "Determines if a single route matches a given request."
-  [route request-path request-method request-roles]
+  [not-authorized route request-path request-method request-roles]
 
   ;; check for path matches
   (let [path-match (path/match (first route) request-path)]
@@ -24,7 +19,7 @@
                 (let [route-roles (rest method-match)]
                   (if-not (or (util/in? route-roles :public)
                               (util/any-matches? route-roles request-roles))
-                    {:handler not-authorized-handler}
+                    {:handler not-authorized}
 
                     ;; return the matched handler & params parsed from path
                     {:handler (first method-match)
@@ -46,12 +41,12 @@
   ;; => {:handler your-matched-handler
   ;;     :path-params {:a \"1\"} }
 "
-  [request-path request-method request-roles]  
+  [routes not-found not-authorized request-path request-method request-roles]  
   (let [match (first (filter #(not (nil? %))
-                             (map #(match-route % request-path request-method request-roles)
+                             (map #(match-route not-authorized % request-path request-method request-roles)
                                   routes)))]
     (if-not (nil? match) match
-            {:handler not-found-handler})))
+            {:handler not-found})))
 
 
 

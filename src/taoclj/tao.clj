@@ -3,9 +3,7 @@
             [taoclj.tao.response :as response]))
 
 
-
-;; perhaps rename wrap-auth or load-user
-(defn wrap-user
+(defn wrap-auth
   "Uses the authenticate handler to lookup and set the user making this request."
   [handler authenticate]
   (fn [request]
@@ -14,52 +12,22 @@
                              :default (authenticate request))))))
 
 
-(defn dispatch [request]
-  ;; (println "*** tao.core/dispatch request = " request)
-  
-  (let [request-roles []
-        match (routing/match (request :uri)
-                             (request :request-method)
-                             request-roles)]
+(defn dispatch
+  "Build a tao handler function for your application"
+  [routes content-type not-found not-authorized]
+  (fn [request]
+      (let [request-roles []
+            match (routing/match routes not-found not-authorized
+                                 (request :uri) (request :request-method) request-roles)]
     
-      ;; invoke the handler and convert back to ring map
-      (response/proxy-to-ring
-        ((:handler match) request))))
-
-
-
-(defn- set-option! [var-to-alter val]
-  (if (nil? val) 
-    (throw (Exception. (str "*** :" 
-                            (:name (meta var-to-alter)) 
-                            " *** must be set in settings map!")))
-    (alter-var-root var-to-alter (fn [f] val))))
-
-(defn init [dispatch settings]
-  (println "*** now initializing tao settings *** ")
-  
-  (set-option! #'routing/routes
-               (settings :routes))
-  
-  (set-option! #'routing/not-found-handler
-               (settings :not-found))
-  
-  (set-option! #'routing/not-authorized-handler 
-               (settings :not-authorized))
-  
-  (set-option! #'response/content-type-default 
-               (settings :content-type))
-  
-  dispatch)
-
-
+        ;; invoke the handler and convert back to ring map
+        (response/proxy-to-ring
+         ((:handler match) request)))))
 
 
 (defmacro defroutes [name & route-data]
   `(def ~name (routing/build ~@route-data)))
 
 
-(defmacro defapp [name dispatch settings]
-  `(def ~name (init ~dispatch ~settings)))
 
 
