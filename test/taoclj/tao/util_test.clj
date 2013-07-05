@@ -18,9 +18,9 @@
     [:a] [:b] nil))
 
 
-(deftest all-matches-finds-matches
-  (are [sequence1 sequence2 expected]
-       (= expected (util/all-matches sequence1 sequence2))
-       [:a] [:b] '()
-       [:a] [:a] '(:a)
-       [:a :b :c] [:a :c :d] '(:a :c)))
+;; (deftest all-matches-finds-matches
+;;   (are [sequence1 sequence2 expected]
+;;        (= expected (util/all-matches sequence1 sequence2))
+;;        [:a] [:b] '()
+;;        [:a] [:a] '(:a)
+;;        [:a :b :c] [:a :c :d] '(:a :c)))

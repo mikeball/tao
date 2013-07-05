@@ -11,8 +11,8 @@
   [sequence1 sequence2]
   (some #(in? sequence1 %) sequence2))
 
-(defn all-matches
-  "Finds all matching elements between 2 sequences."
-  [sequence1 sequence2]
-  (filter #(in? sequence1 %) sequence2))
+;; (defn all-matches
+;;   "Finds all matching elements between 2 sequences."
+;;   [sequence1 sequence2]
+;;   (filter #(in? sequence1 %) sequence2))
 
