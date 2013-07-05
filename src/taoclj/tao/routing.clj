@@ -94,12 +94,5 @@
 
 
 
-(build-routes '(:a :b
-                ["1" {:get h1 :name "x1"}] ["2" {:get h2}] 
-                :c :d
-                ["3" {:get h3 :name "x3"}] ["4" {:get h4}]))
-
-
-
 (defn build [& route-data]
   (build-routes route-data))
