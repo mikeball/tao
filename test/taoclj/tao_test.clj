@@ -9,7 +9,7 @@
 (deftest wrap-auth-handles-nil
   (= (-> (wrap-auth {} nil) :tao :authenticate) nil))
 
-(deftest wrap-user-looks-up-user
+(deftest wrap-auth-looks-up-user
   (= (-> (wrap-auth {} (fn [ctx] (str "user:" "bob")))
          :user)
      "user:bob"))
