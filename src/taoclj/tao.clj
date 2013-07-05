@@ -1,10 +1,8 @@
 (ns taoclj.tao
-  (:require [taoclj.junction :as junction]
-            [ring.middleware.params :as ring-params]
-            [ring.middleware.keyword-params :as ring-keyword-params]
-            [ring.middleware.stacktrace :as ring-stacktrace]
-            [ring.middleware.resource :as ring-resource]
-            [ring.middleware.file-info :as ring-file-info]))
+  (:require [taoclj.tao.routing :as routing]
+            [taoclj.tao.response :as response]))
+
+
 
 ;; perhaps rename wrap-auth or load-user
 (defn wrap-user
@@ -16,17 +14,47 @@
                              :default (authenticate request))))))
 
 
-(defn dispatch [ctx]
-  ;; (println "*** tao.core/dispatch ctx = " ctx)
-  (junction/proxy-ring-response
-   (let [handler-info (junction/dispatch ctx)
-         handler (-> handler-info :handler second)
-         junction-ctx (-> handler-info :ctx)]
+(defn dispatch [request]
+  ;; (println "*** tao.core/dispatch request = " request)
+  
+  (let [request-roles []
+        match (routing/match (request :uri)
+                             (request :request-method)
+                             request-roles)]
+    
+      ;; invoke the handler and convert back to ring map
+      (response/proxy-to-ring
+        ((:handler match) request))))
 
-     ;; (println "\n ******  tao/dispatch junction-ctx = " junction-ctx)
-
-     (handler junction-ctx))))
 
 
-(defn init [opts]
-  (junction/init opts))
+(defn- set-option! [var-to-alter val]
+  (if (nil? val) 
+    (throw (Exception. (str "*** :" 
+                            (:name (meta var-to-alter)) 
+                            " *** must be set in settings map!")))
+    (alter-var-root var-to-alter (fn [f] val))))
+
+(defn init [settings dispatch]
+  (println "*** now initializing tao settings *** ")
+  
+  (set-option! #'routing/routes
+               (settings :routes))
+  
+  (set-option! #'routing/not-found-handler
+               (settings :not-found-handler))
+  
+  (set-option! #'routing/not-authorized-handler 
+               (settings :not-authorized-handler))
+  
+  (set-option! #'response/content-type-default 
+               (settings :content-type-default))
+  
+  (println "*** settings initialization is complete *** ")
+  
+  dispatch)
+
+
+
+
+
