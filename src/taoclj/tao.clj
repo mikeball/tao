@@ -21,8 +21,8 @@
                                  (request :uri) (request :request-method) request-roles)]
     
         ;; invoke the handler and convert back to ring map
-        (response/proxy-to-ring
-         ((:handler match) request)))))
+        (response/proxy-to-ring content-type
+                                ((:handler match) request)))))
 
 
 (defmacro defroutes [name & route-data]

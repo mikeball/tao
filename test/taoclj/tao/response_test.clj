@@ -20,20 +20,25 @@
 
 
 (deftest status-code-is-proxied
-  (is (= 200 (:status (response/proxy-to-ring [200 {} ""])))))
+  (is (= 200 (:status (response/proxy-to-ring "" [200 {} ""])))))
 
 (deftest body-is-proxied
-  (is (= "hi" (:body (response/proxy-to-ring [200 {} "hi"])))))
+  (is (= "hi" (:body (response/proxy-to-ring "" [200 {} "hi"])))))
+
+(deftest default-content-type-is-proxied
+  (is (= "text" (-> (response/proxy-to-ring "text" [200 {} ""])
+                    (get :headers)
+                    (get "Content-Type")))))
 
 (deftest content-type-is-proxied
-  (is (= "text" (-> (response/proxy-to-ring [200 {:content-type "text"} ""])
+  (is (= "text" (-> (response/proxy-to-ring "" [200 {:content-type "text"} ""])
                     (get :headers)
                     (get "Content-Type")))))
 
 (deftest location-is-proxied
-  (is (= "/home" (-> (response/proxy-to-ring [200 {:location "/home"} ""])
+  (is (= "/home" (-> (response/proxy-to-ring "" [200 {:location "/home"} ""])
                     (get :headers)
                     (get "Location")))))
 
 (deftest cookies-are-proxied
-  (is (= "ticket" (:cookies (response/proxy-to-ring [200 {:cookies "ticket"} ""])))))
+  (is (= "ticket" (:cookies (response/proxy-to-ring "" [200 {:cookies "ticket"} ""])))))

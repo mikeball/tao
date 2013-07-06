@@ -1,9 +1,6 @@
 (ns taoclj.tao.response)
 
 
-(def content-type-default nil)
-
-
 (defn set-location "Sets a Location key in a map."
   [headers location]
   (if-not location headers
@@ -16,11 +13,11 @@
 
 
 (defn proxy-to-ring "converts tao response array to ring map"
-  [response]
+  [content-type response]
   (let [headers (second response)]
     {:status (first response)
      :headers (-> {}
-                  (set-content-type content-type-default (headers :content-type))
+                  (set-content-type content-type (headers :content-type))
                   (set-location (headers :location)))
      :cookies (headers :cookies)
      :body (nth response 2)}))
