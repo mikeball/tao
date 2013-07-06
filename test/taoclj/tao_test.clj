@@ -7,10 +7,10 @@
 
 ;; need to build out!
 (deftest wrap-auth-handles-nil
-  (= (-> (wrap-auth {} nil) :tao :authenticate) nil))
+  (= (-> (tao/wrap-auth {} nil) :tao :authenticate) nil))
 
 (deftest wrap-auth-looks-up-user
-  (= (-> (wrap-auth {} (fn [ctx] (str "user:" "bob")))
+  (= (-> (tao/wrap-auth {} (fn [ctx] (str "user:" "bob")))
          :user)
      "user:bob"))
 

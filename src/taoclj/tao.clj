@@ -12,7 +12,7 @@
                              :default (authenticate request))))))
 
 
-(defn dispatch
+(defn gen-dispatch
   "Build a tao handler function for your application"
   [routes content-type not-found not-authorized]
   (fn [request]
