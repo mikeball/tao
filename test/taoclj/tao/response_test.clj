@@ -11,6 +11,13 @@
   (is (= (response/set-location {} "/login") {"Location" "/login"})))
 
 
+(deftest set-cookies-key-not-set-if-nil
+  (is (= {:a 1} (response/set-cookies {:a 1} nil))))
+
+(deftest set-cookies-sets-value
+  (is (= {:a 1 :cookies {:val "v"}} (response/set-cookies {:a 1} {:val "v"}))))
+
+
 (deftest set-content-type-ignores-nil
   (is (= (response/set-content-type {} "text" nil) {"Content-Type" "text"})))
 

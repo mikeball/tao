@@ -16,13 +16,17 @@
   "Build a tao handler function for your application"
   [routes content-type not-found not-authorized]
   (fn [request]
-      (let [request-roles []
+      (let [request-roles (-> request :user :roles)
             match (routing/match routes not-found not-authorized
                                  (request :uri) (request :request-method) request-roles)]
-    
+        (println "**** request-roles: " request-roles "   ******")
         ;; invoke the handler and convert back to ring map
         (response/proxy-to-ring content-type
                                 ((:handler match) request)))))
+
+
+
+
 
 
 (defmacro defroutes [name & route-data]
