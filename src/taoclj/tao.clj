@@ -3,7 +3,7 @@
             [taoclj.tao.response :as response]))
 
 
-(defn wrap-auth
+(defn wrap-user
   "Uses the authenticate handler to lookup and set the user making this request."
   [handler authenticate]
   (fn [request]
