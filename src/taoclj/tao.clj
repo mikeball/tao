@@ -18,15 +18,14 @@
   (fn [request]
       (let [request-roles (-> request :user :roles)
             match (routing/match routes not-found not-authorized
-                                 (request :uri) (request :request-method) request-roles)]
+                                 (request :uri) (request :request-method) request-roles)
+            handler (match :handler)
+            new-request (assoc request :params (merge (request :params)
+                                                      (match :path-params)))]
 
         ;; invoke the handler and convert back to ring map
         (response/proxy-to-ring content-type
-                                ((:handler match) request)))))
-
-
-
-
+                                (handler new-request)))))
 
 
 (defmacro defroutes [name & route-data]

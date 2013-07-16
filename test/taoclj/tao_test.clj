@@ -49,3 +49,13 @@
            :request-method :get
            :user {:roles [:a]}}))))
 
+
+
+(deftest path-parameters-are-passed-to-handlers
+  (is (= "1"
+         (:body ((tao/gen-dispatch [["/a/:id" {:get [(fn [r] [200 {} (-> r :params :id)]) :public]}]] 
+                                   "ct"
+                                   (fn [r] [404 {} "nf"])
+                                   (fn [r] [403 {} "na"]))
+                 {:uri "/a/1"
+                  :request-method :get})))))
