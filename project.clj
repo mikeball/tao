@@ -1,4 +1,4 @@
-(defproject tao "0.0.1"
+(defproject org.taoclj/tao "0.0.2-SNAPSHOT"
   :description "An http routing and authorization library"
 
   :url "http://github.com/mikeball/tao"
@@ -10,4 +10,4 @@
                  [clout "1.1.0"]
                  [ring/ring-core "1.2.1"]]
 
-  :profiles {:dev {:dependencies [[ring/ring-devel "1.2.0-RC1"]]}})
+  :profiles {:dev {:dependencies [[ring/ring-devel "1.2.1"]]}})
