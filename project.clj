@@ -8,6 +8,6 @@
 
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [clout "1.1.0"]
-                 [ring/ring-core "1.2.0-RC1"]]
+                 [ring/ring-core "1.2.1"]]
 
   :profiles {:dev {:dependencies [[ring/ring-devel "1.2.0-RC1"]]}})
