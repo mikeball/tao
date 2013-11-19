@@ -35,7 +35,7 @@
   ;; => {:handler your-configured-not-found-handler}
 
   ;; No match between the allowed method roles and request roles returns
-  ;; => {:handler your-configured-not-found-handler}
+  ;; => {:handler your-configured-not-authorized-handler}
 
   ;; A successful match returns the relevant handler, as well as params parsed from the path
   ;; => {:handler your-matched-handler
