@@ -1,5 +1,5 @@
 (defproject tao "0.0.1"
-  :description "A clojure web framework."
+  :description "An http routing and authorization library"
 
   :url "http://github.com/mikeball/tao"
   
