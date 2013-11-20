@@ -1,5 +1,6 @@
 (ns taoclj.tao
   (:require [taoclj.tao.routing :as routing]
+            [taoclj.tao.request :refer [handler-method]]
             [taoclj.tao.response :as response]))
 
 
@@ -17,8 +18,12 @@
   [routes content-type not-found not-authorized]
   (fn [request]
       (let [request-roles (-> request :user :roles)
-            match (routing/match routes not-found not-authorized
-                                 (request :uri) (request :request-method) request-roles)
+            match (routing/match routes
+                                 not-found
+                                 not-authorized
+                                 (request :uri)
+                                 (handler-method request)
+                                 request-roles)
             handler (match :handler)
             new-request (assoc request :params (merge (request :params)
                                                       (match :path-params)))]
