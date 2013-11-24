@@ -17,8 +17,8 @@
   (is (= {:status 404
           :headers {"Content-Type" "ct"}
           :body "nf"}
-         ((tao/gen-dispatch '(["/a" {}]) 
-                            "ct" 
+         ((tao/gen-dispatch '(["/a" {}])
+                            "ct"
                             (fn [r] [404 {} "nf"])
                             (fn [r] [403 {} "na"]))
           {:uri "/b"
@@ -29,7 +29,7 @@
   (is (= {:status 403
           :headers {"Content-Type" "ct"}
           :body "na"}
-         ((tao/gen-dispatch '(["/a" {:get ('h :b)}]) 
+         ((tao/gen-dispatch '(["/a" {:get ('h :b)}])
                             "ct"
                             (fn [r] [404 {} "nf"])
                             (fn [r] [403 {} "na"]))
@@ -41,7 +41,7 @@
   (is (= {:status 200
           :headers {"Content-Type" "ct"}
           :body "ok"}
-         ((tao/gen-dispatch [["/a" {:get [(fn [r] [200 {} "ok"]) :a]}]] 
+         ((tao/gen-dispatch [["/a" {:get [(fn [r] [200 {} "ok"]) :a]}]]
                             "ct"
                             (fn [r] [404 {} "nf"])
                             (fn [r] [403 {} "na"]))
@@ -53,9 +53,41 @@
 
 (deftest path-parameters-are-passed-to-handlers
   (is (= "1"
-         (:body ((tao/gen-dispatch [["/a/:id" {:get [(fn [r] [200 {} (-> r :params :id)]) :public]}]] 
+         (:body ((tao/gen-dispatch [["/a/:id" {:get [(fn [r] [200 {} (-> r :params :id)]) :public]}]]
                                    "ct"
                                    (fn [r] [404 {} "nf"])
                                    (fn [r] [403 {} "na"]))
                  {:uri "/a/1"
                   :request-method :get})))))
+
+
+
+(deftest standard-handlers-use-shorthand-ring-response-notation
+  ; standard handlers would be http verbs, ie :get, :post, :put, :delete
+  (is (= {:status 200
+          :headers {"Content-Type" "ct"}
+          :body "ok"}
+
+         ((tao/gen-dispatch [["/a" {:get [(fn [r] [200 {} "ok"]) :public]}]]
+                            "ct"
+                            (fn [r] [404 {} "nf"])
+                            (fn [r] [403 {} "na"]))
+
+          {:uri "/a"
+           :request-method :get}))))
+
+
+
+(deftest websocket-handlers-use-standard-ring-response-notation
+  (is (= {:status 200 :body "ok"}
+
+         ((tao/gen-dispatch [["/a" {:websocket [(fn [r] {:status 200 :body "ok"}) :public]}]]
+                            "ct"
+                            (fn [r] [404 {} "nf"])
+                            (fn [r] [403 {} "na"]))
+
+          {:uri "/a"
+           :headers {"connection" "upgrade"
+                     "upgrade" "websocket"}}))))
+
+

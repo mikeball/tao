@@ -1,5 +1,6 @@
 (ns taoclj.tao.routing
   (:require [taoclj.tao.routing.path :as path]
+            [taoclj.tao.response :as response]
             [taoclj.tao.util :as util]))
 
 
@@ -14,15 +15,17 @@
       ;; check for method matches
       (let [method-match (request-method (second route))]
         (if-not method-match nil
-                
+
                 ;; check for role matches
                 (let [route-roles (rest method-match)]
                   (if-not (or (util/in? route-roles :public)
                               (util/any-matches? route-roles request-roles))
-                    {:handler not-authorized}
+                    {:handler not-authorized
+                     :handler-format :simple}
 
                     ;; return the matched handler & params parsed from path
                     {:handler (first method-match)
+                     :handler-format (response/get-handler-format request-method)
                      :path-params path-match})))))))
 
 
@@ -30,7 +33,7 @@
 (defn match
   "Returns first matching route in the routing table, given a path, method and roles.
    You must first initialize the routing table, not found and not authorized handlers!!
-  
+
   ;; No match found returns
   ;; => {:handler your-configured-not-found-handler}
 
@@ -41,12 +44,14 @@
   ;; => {:handler your-matched-handler
   ;;     :path-params {:a \"1\"} }
 "
-  [routes not-found not-authorized request-path request-method request-roles]  
+  [routes not-found not-authorized request-path request-method request-roles]
   (let [match (first (filter #(not (nil? %))
                              (map #(match-route not-authorized % request-path request-method request-roles)
                                   routes)))]
+
     (if-not (nil? match) match
-            {:handler not-found})))
+            {:handler not-found
+             :handler-format :simple})))
 
 
 

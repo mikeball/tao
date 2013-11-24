@@ -26,3 +26,8 @@
                   :body (nth response 2)}
                  (headers :cookies))))
 
+
+(defn get-handler-format [request-method]
+  (cond (= request-method :websocket) :standard
+        (= request-method :sse) :standard
+        :default :simple))

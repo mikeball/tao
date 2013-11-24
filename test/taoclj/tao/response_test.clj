@@ -49,3 +49,15 @@
 
 (deftest cookies-are-proxied
   (is (= "ticket" (:cookies (response/proxy-to-ring "" [200 {:cookies "ticket"} ""])))))
+
+
+(deftest expected-response-formats-are-mapped
+  (are [given-method expected-format]
+       (= (response/get-handler-format given-method) expected-format)
+       :get :simple
+       :post :simple
+       :put :simple
+       :delete :simple
+       :websocket :standard
+       :sse :standard))
+

@@ -25,12 +25,17 @@
                                  (handler-method request)
                                  request-roles)
             handler (match :handler)
+            handler-format (match :handler-format)
             new-request (assoc request :params (merge (request :params)
                                                       (match :path-params)))]
 
+        ; (println "\n*******\n" match)
+
         ;; invoke the handler and convert back to ring map
-        (response/proxy-to-ring content-type
-                                (handler new-request)))))
+        (cond (= handler-format :standard) (handler new-request)
+              :default (response/proxy-to-ring content-type
+                                               (handler new-request)))
+        )))
 
 
 (defmacro deftable [name & route-data]
