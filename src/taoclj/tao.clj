@@ -33,7 +33,7 @@
                                 (handler new-request)))))
 
 
-(defmacro defroutes [name & route-data]
+(defmacro deftable [name & route-data]
   `(def ~name (routing/build ~@route-data)))
 
 
