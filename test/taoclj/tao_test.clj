@@ -3,91 +3,53 @@
             [taoclj.tao :as tao]))
 
 
-(deftest wrap-user-returns-wrapped-handler-call
-  (is (= {:b 2} ((tao/wrap-user (fn [r] {:b 2}) nil) {:a 1}))))
-
-(deftest wrap-user-adds-user-to-request
-  (is (= {:a 1 :user nil} ((tao/wrap-user (fn [r] r) 'authenticate) {:a 1}))))
-
-(deftest wrap-user-attaches-authenticate-result
-  (is (= {:a 1 :user {:name "bob"}} ((tao/wrap-user (fn [r] r)
-                                                    (fn [r] {:name "bob"})) {:a 1}))))
-
-(deftest generated-dispatch-returns-not-found-on-no-handler-match
-  (is (= {:status 404
-          :headers {"Content-Type" "ct"}
-          :body "nf"}
-         ((tao/gen-dispatch '(["/a" {}])
-                            "ct"
-                            (fn [r] [404 {} "nf"])
-                            (fn [r] [403 {} "na"]))
-          {:uri "/b"
-           :request-method :get}))))
+(deftest ring-response-is-not-altered
+  (is (= {:status 200} (tao/proxy-response {:status 200}))))
 
 
-(deftest generated-dispatch-enforces-authorization
-  (is (= {:status 403
-          :headers {"Content-Type" "ct"}
-          :body "na"}
-         ((tao/gen-dispatch '(["/a" {:get ('h :b)}])
-                            "ct"
-                            (fn [r] [404 {} "nf"])
-                            (fn [r] [403 {} "na"]))
-          {:uri "/a"
-           :request-method :get
-           :user nil}))))
+(deftest status-code-is-proxied
+  (is (= 200 (:status (tao/proxy-response [200 {} ""])))))
 
-(deftest generated-dispatch-allows-valid-roles
-  (is (= {:status 200
-          :headers {"Content-Type" "ct"}
-          :body "ok"}
-         ((tao/gen-dispatch [["/a" {:get [(fn [r] [200 {} "ok"]) :a]}]]
-                            "ct"
-                            (fn [r] [404 {} "nf"])
-                            (fn [r] [403 {} "na"]))
-          {:uri "/a"
-           :request-method :get
-           :user {:roles [:a]}}))))
+
+(deftest body-is-proxied
+  (is (= "hi" (:body (tao/proxy-response [200 {} "hi"])))))
+
+
+(deftest content-type-is-proxied
+  (is (= "text" (-> (tao/proxy-response [200 {:content-type "text"} ""])
+                    (get :headers)
+                    (get "Content-Type")))))
+
+
+(deftest location-is-proxied
+  (is (= "/home" (-> (tao/proxy-response [200 {:location "/home"} ""])
+                     (get :headers)
+                     (get "Location")))))
+
+
+(deftest cookie-is-proxied-to-cookies
+  (is (= {:status 200 :body "" :cookies {"name" {:value "val"}}}
+         (tao/proxy-response [200 {:cookie {"name" {:value "val"}}} ""]))))
+
+
+(deftest content-type-setting-is-required
+  (is (thrown? IllegalArgumentException (tao/fn-dispatch {:routes '(["/" {}])}))))
+
+
+(deftest generated-dispatch-sets-default-content-type
+   (is (= {:status 200 :headers {"Content-Type" "ct"} :body "hi"}
+          ((tao/fn-dispatch {:routes         [["/a" {:get [(fn [_] [200 {} "hi"]) :public]}]]
+                             :content-type   "ct"})
+           {:uri "/a" :request-method :get}))))
 
 
 
-(deftest path-parameters-are-passed-to-handlers
-  (is (= "1"
-         (:body ((tao/gen-dispatch [["/a/:id" {:get [(fn [r] [200 {} (-> r :params :id)]) :public]}]]
-                                   "ct"
-                                   (fn [r] [404 {} "nf"])
-                                   (fn [r] [403 {} "na"]))
-                 {:uri "/a/1"
-                  :request-method :get})))))
+
+; (clojure.test/run-tests 'taoclj.tao-test)
 
 
 
-(deftest standard-handlers-use-shorthand-ring-response-notation
-  ; standard handlers would be http verbs, ie :get, :post, :put, :delete
-  (is (= {:status 200
-          :headers {"Content-Type" "ct"}
-          :body "ok"}
-
-         ((tao/gen-dispatch [["/a" {:get [(fn [r] [200 {} "ok"]) :public]}]]
-                            "ct"
-                            (fn [r] [404 {} "nf"])
-                            (fn [r] [403 {} "na"]))
-
-          {:uri "/a"
-           :request-method :get}))))
 
 
-
-(deftest websocket-handlers-use-standard-ring-response-notation
-  (is (= {:status 200 :body "ok"}
-
-         ((tao/gen-dispatch [["/a" {:websocket [(fn [r] {:status 200 :body "ok"}) :public]}]]
-                            "ct"
-                            (fn [r] [404 {} "nf"])
-                            (fn [r] [403 {} "na"]))
-
-          {:uri "/a"
-           :headers {"connection" "upgrade"
-                     "upgrade" "websocket"}}))))
 
 
