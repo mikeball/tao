@@ -1,12 +1,12 @@
-(ns taoclj.tao
+(ns taoclj.tao.routing
   (:require [taoclj.via :as via]
             [potemkin]))
+
 
 
 ; bring in deftable macro for easy reference by users
 (potemkin/import-vars
  [taoclj.via deftable])
-
 
 
 
@@ -59,7 +59,7 @@
                 ":content-type setting is required and must be valid http content-type string"))))
 
 
-{:headers {"Content-Type" "text/plain"}}
+; {:headers {"Content-Type" "text/plain"}}
 
 ; set default content type if not set in tao response
 (defn- set-default-content-type [ring default]
@@ -67,11 +67,11 @@
     (assoc-in ring [:headers "Content-Type"] default)))
 
 
-(set-default-content-type
- {:headers {"Content-Type" "ct1"}}
- "ct-default")
+; (set-default-content-type
+;  {:headers {"Content-Type" "ct1"}}
+;  "ct-default")
 
-(set-default-content-type {} "ct")
+; (set-default-content-type {} "ct")
 
 
 
@@ -93,16 +93,3 @@
           (via-dispatch)
           (proxy-response)
           (set-default-content-type default-ct)))))
-
-
-
-
-; (clojure.test/run-tests 'taoclj.tao-test)
-
-
-
-
-
-
-
-
