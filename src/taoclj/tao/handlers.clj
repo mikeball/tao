@@ -2,7 +2,7 @@
 
 
 (defmacro =>
-  "Behaves as some-> except that it short circuits on vector? rather than nil?
+  "Behaves as some-> except that evaluation short circuits on vector? rather than nil?
   and returns the result vector, or result of final task"
   [init & tasks]
   (let [g (gensym)

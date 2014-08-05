@@ -1,6 +1,6 @@
-(ns taoclj.tao-test
+(ns taoclj.tao.routing-test
   (:require [clojure.test :refer :all]
-            [taoclj.tao :as tao]))
+            [taoclj.tao.routing :as tao]))
 
 
 (deftest ring-response-is-not-altered
