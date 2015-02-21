@@ -45,6 +45,30 @@
 
 
 
+(deftest roles-are-enforced
+   (is (= {:status 403 :headers {"Content-Type" "ct"} :body "not authorized"}
+
+          ((tao/fn-dispatch {:routes        [["/a" {:get [(fn [_] [200 {} "hi"]) :myrole]}]]
+                             :content-type  "ct"
+                             :not-authorized (fn [r] [403 {} "not authorized"]) })
+           {:uri "/a" :request-method :get}))))
+
+
+
+(deftest roles-are-allowed
+   (is (= {:status 200 :headers {"Content-Type" "ct"} :body "hi"}
+
+          ((tao/fn-dispatch {:routes         [["/a" {:get [(fn [_] [200 {} "hi"]) :myrole]}]]
+                             :content-type   "ct"
+                             :authenticate   (fn [r] {:roles [:myrole]})}
+                            )
+           {:uri "/a" :request-method :get}))))
+
+
+
+
+
+
 ; (clojure.test/run-tests 'taoclj.tao-test)
 
 

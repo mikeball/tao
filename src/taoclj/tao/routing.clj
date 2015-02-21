@@ -75,6 +75,7 @@
 
 
 
+
 (defn fn-dispatch
   "Build a handler function and enforces role restrictions
 
@@ -86,10 +87,34 @@
   (validate settings)
 
   (let [default-ct   (:content-type settings)
-        via-dispatch (via/fn-dispatch settings)]
+        via-dispatch (via/fn-dispatch settings)
+        authenticate (if-let [given (:authenticate settings)]
+                       given (fn [r] nil))]
 
     (fn [request]
-      (-> request
-          (via-dispatch)
-          (proxy-response)
-          (set-default-content-type default-ct)))))
+      (let [result (authenticate request)]
+
+        (cond (vector? result) ; we have an immediate response
+              (-> result
+                  (proxy-response)
+                  (set-default-content-type default-ct))
+
+              :default ; we have a nil or map from user lookup
+              (-> request
+                  (assoc :user result)
+                  (via-dispatch)
+                  (proxy-response)
+                  (set-default-content-type default-ct))
+          ))
+    )))
+
+
+
+
+
+
+
+
+
+
+
