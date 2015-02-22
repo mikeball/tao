@@ -26,18 +26,13 @@
 
 
 ;; (short-> {:name "bob"}
-
 ;;          ((fn [user]
 ;;            (if (= "bill" (:name user))
 ;;              [200 "bill not allowed"]
 ;;              (assoc user :step2 true))
-
 ;;          ))
-
 ;;          (assoc :step3 true)
-
 ;;          :on vector?
-
 ;;           )
 
 
@@ -48,14 +43,11 @@
 
 
 ;; (rsx-> {:name "bill"}
-
 ;;        ((fn [user]
 ;;           (if (= "bill" (:name user))
 ;;             [200 "bill is not allowed"]
 ;;             (assoc user :step2 true))
-
 ;;           ))
-
 ;;        (assoc :step3 true))
 
 
