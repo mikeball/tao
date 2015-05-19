@@ -99,7 +99,7 @@
                   (proxy-response)
                   (set-default-content-type default-ct))
 
-              :default ; we have a nil or map from user lookup
+              :default ; we have a nil or user
               (-> request
                   (assoc :user result)
                   (via-dispatch)
