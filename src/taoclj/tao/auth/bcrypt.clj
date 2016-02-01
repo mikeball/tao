@@ -18,14 +18,14 @@
 
 
 
-(defn passwords-match? [given known]
+;; (defn passwords-match? [given known]
 
-  ; append/prefix hmac to password, then generate hash value
+;;   ; append/prefix hmac to password, then generate hash value
 
 
-   ; (BCrypt/checkpw given known)
-   true
-  )
+;;    ; (BCrypt/checkpw given known)
+;;    true
+;;   )
 
 
 
