@@ -6,8 +6,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [potemkin "0.4.3"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [potemkin "0.4.5"]
                  [org.taoclj/via "0.1.0"]
                  [org.taoclj/ticket "0.0.1"]
-                 [org.mindrot/jbcrypt "0.3m"]])
+                 [org.mindrot/jbcrypt "0.4"]])
